@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface AnimationView : UIView
+@property (nonatomic,assign)int branchCount;//目前只输入偶数
 -(void)start;
 @end

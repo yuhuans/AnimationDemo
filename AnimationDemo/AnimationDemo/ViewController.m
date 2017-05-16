@@ -8,7 +8,6 @@
 
 #import "ViewController.h"
 #import "AnimationView.h"
-
 @interface ViewController ()
 @property (nonatomic,strong)AnimationView *animationView;
 @end
@@ -29,6 +28,7 @@
 -(AnimationView *)animationView{
     if (!_animationView) {
         _animationView=[[AnimationView alloc]initWithFrame:CGRectMake(0, 0, 100, 100)];
+        _animationView.branchCount=2;
         _animationView.center=self.view.center;
         [self.view addSubview:_animationView];
     }

@@ -12,12 +12,12 @@
 -(instancetype)initWithFrame:(CGRect)frame{
     self=[super initWithFrame:frame];
     if (self) {
-        [self setUp];
+//        [self setUp];
     }
     return self;
 }
 -(void)setUp{
-    for (int i=0 ; i<6; i++) {
+    for (int i=0 ; i<_branchCount; i++) {
         UIView *view=[[UIView alloc]initWithFrame:CGRectMake(0, 0, KOriginalR*2, KOriginalR*2)];
         view.layer.cornerRadius = view.frame.size.width / 2;
         view.layer.masksToBounds = YES;
@@ -29,31 +29,43 @@
 }
 -(void)start{
     float distance=self.frame.size.width/4;
-    for (int i=0 ; i<6; i++) {
+    UIView *view=[self viewWithTag:101];
+    NSMutableArray *positionArr=[NSMutableArray new];
+    if (_branchCount%2==0) {
+        //一个角除去垂直水平几个分支 则一个角除去垂直水平几个对角线
+        float branchOfAnAngle;
+        //diagonal 对角线个数
+        float diagonalCount = _branchCount/2;
+        // vertical 垂直
+        if (_branchCount%4==0) {
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x, view.layer.position.y+distance)]];
+            [positionArr addObject: [NSValue valueWithCGPoint:CGPointMake(view.layer.position.x, view.layer.position.y-distance)]];
+            branchOfAnAngle=diagonalCount-2;
+        }else{
+            branchOfAnAngle=diagonalCount-1;
+        }
+        //horizontal 水平
+        [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x+distance, view.layer.position.y)]];
+         [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-distance, view.layer.position.y)]];
+        float angle=M_PI*2/_branchCount;
+        for(int i=1;i<branchOfAnAngle+1;i++){
+            CGPoint point1=CGPointMake(view.layer.position.x+cos(angle*i)*distance, view.layer.position.y-distance*sin(angle*i));
+            CGPoint point2=CGPointMake(view.layer.position.x+cos(angle*i)*distance, view.layer.position.y+distance*sin(angle*i));
+            [positionArr addObject:[NSValue valueWithCGPoint:point1]];
+            [positionArr addObject:[NSValue valueWithCGPoint:point2]];
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-cos(angle*i)*distance, view.layer.position.y-distance*sin(angle*i))]];
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-cos(angle*i)*distance, view.layer.position.y+distance*sin(angle*i))]];
+        }
+    }
+    for (int i=0 ; i<_branchCount; i++) {
         UIView *view=[self viewWithTag:100+i];
-    
         CABasicAnimation *scaleAnima = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
         scaleAnima.fromValue = [NSNumber numberWithFloat:1.0f];
         scaleAnima.toValue = [NSNumber numberWithFloat:distance/KOriginalR];
         
         CABasicAnimation *positionAnima = [CABasicAnimation animationWithKeyPath:@"position"];
         positionAnima.fromValue = [NSValue valueWithCGPoint:view.center];
-
-        if (i==0) {
-            positionAnima.toValue = [NSValue valueWithCGPoint:CGPointMake(view.center.x+distance/2, view.layer.position.y-(distance*(sqrt (3)/2)))];
-        }else if (i==1) {
-            positionAnima.toValue = [NSValue valueWithCGPoint:CGPointMake(view.center.x-distance/2, view.layer.position.y-(distance*(sqrt (3)/2)))];
-        }else if (i==3) {
-            positionAnima.toValue = [NSValue valueWithCGPoint:CGPointMake(view.center.x-distance, view.layer.position.y)];
-        }
-        else if (i==4) {
-            positionAnima.toValue = [NSValue valueWithCGPoint:CGPointMake(view.center.x-distance/2, view.layer.position.y+(distance*(sqrt (3)/2)))];
-        }else if (i==5) {
-            positionAnima.toValue = [NSValue valueWithCGPoint:CGPointMake(view.center.x+distance/2, view.layer.position.y+(distance*(sqrt (3)/2)))];
-        }else{
-            positionAnima.toValue = [NSValue valueWithCGPoint:CGPointMake(view.center.x+distance,view.layer.position.y)];
-        }
-        
+        positionAnima.toValue=positionArr[i];
         //组动画
         CAAnimationGroup *groupAnimation = [CAAnimationGroup animation];
         groupAnimation.animations = [NSArray arrayWithObjects:scaleAnima,positionAnima, nil];
@@ -75,5 +87,10 @@
     anima.removedOnCompletion = NO;
     anima.repeatCount = MAXFLOAT;
     [self.layer addAnimation:anima forKey:@"transform"];
+}
+#pragma -mark -gettr
+-(void)setBranchCount:(int)branchCount{
+    _branchCount=branchCount;
+    [self setUp];
 }
 @end
