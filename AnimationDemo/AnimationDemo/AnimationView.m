@@ -31,32 +31,58 @@
     float distance=self.frame.size.width/4;
     UIView *view=[self viewWithTag:101];
     NSMutableArray *positionArr=[NSMutableArray new];
-    if (_branchCount%2==0) {
-        //一个角除去垂直水平几个分支 则一个角除去垂直水平几个对角线
-        float branchOfAnAngle;
-        //diagonal 对角线个数
-        float diagonalCount = _branchCount/2;
-        // vertical 垂直
-        if (_branchCount%4==0) {
+    //一个角除去垂直水平几个分支 则一个角除去垂直水平几个对角线
+    float branchOfAnAngle = M_PI*2/_branchCount;
+    //        [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x, view.layer.position.y-distance)]];
+    float angle = 0;
+    while (angle < M_PI*2) {
+        angle = angle + branchOfAnAngle;
+        if (0 < angle < M_PI/2) {
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x+cos(angle)*distance, view.layer.position.y-sin(angle)*distance)]];
+        }else if(angle == 0){
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x+distance, view.layer.position.y)]];
+        }else if (angle == M_PI/2){
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x, view.layer.position.y-distance)]];
+        }else if (angle == M_PI){
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-distance, view.layer.position.y)]];
+        }else if (angle == M_PI/4*3){
             [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x, view.layer.position.y+distance)]];
-            [positionArr addObject: [NSValue valueWithCGPoint:CGPointMake(view.layer.position.x, view.layer.position.y-distance)]];
-            branchOfAnAngle=diagonalCount-2;
-        }else{
-            branchOfAnAngle=diagonalCount-1;
-        }
-        //horizontal 水平
-        [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x+distance, view.layer.position.y)]];
-         [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-distance, view.layer.position.y)]];
-        float angle=M_PI*2/_branchCount;
-        for(int i=1;i<branchOfAnAngle+1;i++){
-            CGPoint point1=CGPointMake(view.layer.position.x+cos(angle*i)*distance, view.layer.position.y-distance*sin(angle*i));
-            CGPoint point2=CGPointMake(view.layer.position.x+cos(angle*i)*distance, view.layer.position.y+distance*sin(angle*i));
-            [positionArr addObject:[NSValue valueWithCGPoint:point1]];
-            [positionArr addObject:[NSValue valueWithCGPoint:point2]];
-            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-cos(angle*i)*distance, view.layer.position.y-distance*sin(angle*i))]];
-            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-cos(angle*i)*distance, view.layer.position.y+distance*sin(angle*i))]];
+        }else if (M_PI/2 < angle < M_PI){
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-cos(angle)*distance, view.layer.position.y-sin(angle)*distance)]];
+        }else if (M_PI < angle < M_PI/4*3){
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-cos(angle)*distance, view.layer.position.y+sin(angle)*distance)]];
+        }else if (M_PI/4*3 < angle < M_PI*2){
+            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x+cos(angle)*distance, view.layer.position.y+sin(angle)*distance)]];
         }
     }
+//    if (_branchCount%2 == 0) {
+//        //一个角除去垂直水平几个分支 则一个角除去垂直水平几个对角线
+//        float branchOfAnAngle;
+//        //diagonal 对角线个数
+//        float diagonalCount = _branchCount/2;
+//        // vertical 垂直
+//        if (_branchCount%4==0) {
+//            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x, view.layer.position.y+distance)]];
+//            [positionArr addObject: [NSValue valueWithCGPoint:CGPointMake(view.layer.position.x, view.layer.position.y-distance)]];
+//            branchOfAnAngle=diagonalCount-2;
+//        }else{
+//            branchOfAnAngle=diagonalCount-1;
+//        }
+//        //horizontal 水平
+//        [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x+distance, view.layer.position.y)]];
+//         [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-distance, view.layer.position.y)]];
+//        float angle=M_PI*2/_branchCount;
+//        for(int i=1;i<branchOfAnAngle+1;i++){
+//            CGPoint point1=CGPointMake(view.layer.position.x+cos(angle*i)*distance, view.layer.position.y-distance*sin(angle*i));
+//            CGPoint point2=CGPointMake(view.layer.position.x+cos(angle*i)*distance, view.layer.position.y+distance*sin(angle*i));
+//            [positionArr addObject:[NSValue valueWithCGPoint:point1]];
+//            [positionArr addObject:[NSValue valueWithCGPoint:point2]];
+//            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-cos(angle*i)*distance, view.layer.position.y-distance*sin(angle*i))]];
+//            [positionArr addObject:[NSValue valueWithCGPoint:CGPointMake(view.layer.position.x-cos(angle*i)*distance, view.layer.position.y+distance*sin(angle*i))]];
+//        }
+//    }else{
+//
+//    }
     for (int i=0 ; i<_branchCount; i++) {
         UIView *view=[self viewWithTag:100+i];
         CABasicAnimation *scaleAnima = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
